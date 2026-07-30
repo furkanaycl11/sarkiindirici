@@ -22,34 +22,28 @@ def indir():
     output_template = os.path.join(temp_dir, '%(title)s.%(ext)s')
 
     ydl_opts = {
-    'format': 'bestaudio/best',
-    'outtmpl': output_template,
-    'quiet': True,
-    'no_warnings': True,
-    # YouTube Bot / IP engellerini aşmak için güncel istemci yapılandırması:
-    'extractor_args': {
-        'youtube': {
-            'player_client': ['web_embedded', 'android_vr', 'ios'],
-            'player_skip': ['configs']
+        'format': 'bestaudio/best',
+        'outtmpl': output_template,
+        'quiet': True,
+        'no_warnings': True,
+        # 152 - 18 Hatasını engelleyen yeni istemci ve PO Token bypass kombinasyonu:
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['web_embedded', 'android_vr', 'ios'],
+                'player_skip': ['configs', 'webpage']
+            }
+        },
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
         }
-    },
-    'http_headers': {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
     }
-}
-
-    # Eğer cookies.txt varsa ve geçerliyse ekle
-    cookie_path = 'cookies.txt'
-if os.path.exists(cookie_path) and os.path.getsize(cookie_path) > 0:
-    ydl_opts['cookiefile'] = cookie_path
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
         return jsonify({'success': True, 'message': 'İndirme başarılı!'})
     except Exception as e:
-        # Hata detayını yakala ve düzgün bir JSON olarak döndür
         print(f"İndirme hatası: {str(e)}")
         return jsonify({'error': f"İndirme esnasında hata oluştu: {str(e)}"}), 500
 
