@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 MP3 İndirici</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #0f172a; 
+            color: #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .card { 
+            background: #1e293b; 
+            padding: 30px; 
+            border-radius: 12px; 
+            width: 400px; 
+            text-align: center; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        h2 { margin-bottom: 20px; color: #38bdf8; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+            box-sizing: border-box; 
+            background: #0f172a; 
+            border: 1px solid #334155; 
+            color: #fff; 
+            border-radius: 6px; 
+            outline: none;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #0284c7; 
+            border: none; 
+            color: #fff; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
+        button:hover { background: #0369a1; }
+        #status { margin-top: 15px; font-size: 0.9em; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🎵 Müzik İndirici</h2>
+        <input type="text" id="urlInput" placeholder="YouTube Linkini Yapıştırın...">
+        <button onclick="downloadMusic()">Müziği İndir</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        async function downloadMusic() {
+            const url = document.getElementById('urlInput').value;
+            const status = document.getElementById('status');
+            if(!url) { status.innerText = "Lütfen bir link girin!"; return; }
+            
+            status.innerText = "İndiriliyor, lütfen bekleyin...";
+            
+            try {
+                const res = await fetch('/download', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({url: url}) 
+                });
+                
+                if(!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || "Sunucu hatası");
+                }
+
+                const blob = await res.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = "sarki.mp3";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                
+                status.innerText = "İndirme Tamamlandı! 🎉";
+            } catch(e) { 
+                status.innerText = "Hata oluştu: " + e.message; 
+            }
+        }
+    </script>
+</body>
+</html>

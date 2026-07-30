@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Music Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(23, 32, 51, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.12) 0px, transparent 40%),
+                radial-gradient(at 90% 90%, rgba(168, 85, 247, 0.12) 0px, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            padding: 30px;
+        }
+
+        /* 3 Panelli Grid Yapısı */
+        .layout-wrapper {
+            display: grid;
+            grid-template-columns: 280px 480px 280px;
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* SOL PANEL: Geçmiş */
+        .history-title, .trends-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .history-item i {
+            color: var(--accent-color);
+        }
+
+        .history-item span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-muted);
+        }
+
+        /* ORTA PANEL: İndirici */
+        .main-card {
+            padding: 36px 28px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            font-size: 24px;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+        }
+
+        /* SAĞ PANEL: İstatistik ve Kısayollar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .stat-box .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px;
+            color: #a5b4fc;
+            line-height: 1.5;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 13px;
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-loading { background: rgba(99, 102, 241, 0.1); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.2); }
+        .status-success { background: rgba(16, 185, 129, 0.1); color: var(--success-color); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-error { background: rgba(239, 68, 68, 0.1); color: var(--error-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Mobil Ekranlar İçin Esneklik */
+        @media (max-width: 900px) {
+            .layout-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout-wrapper">
+        
+        <!-- SOL PANEL: Son İndirilenler -->
+        <div class="card">
+            <div class="history-title">
+                <i class="fa-solid fa-clock-rotate-left"></i> Son İndirilenler
+            </div>
+            <ul class="history-list" id="historyList">
+                <li class="history-item">
+                    <i class="fa-solid fa-music"></i>
+                    <span>Henüz indirme yapılmadı</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ORTA PANEL: Ana İndirme Ekranı -->
+        <div class="card main-card">
+            <div class="logo-icon">
+                <i class="fa-solid fa-compact-disc"></i>
+            </div>
+            <h1>Şarkı İndirici</h1>
+            <p class="subtitle">YouTube bağlantısını yapıştırın ve yüksek kalitede MP3 indirin.</p>
+
+            <form id="downloadForm">
+                <div class="input-group">
+                    <i class="fa-solid fa-link"></i>
+                    <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." required>
+                </div>
+                <button type="submit" id="btn">
+                    <i class="fa-solid fa-download"></i> İndirmeyi Başlat
+                </button>
+            </form>
+
+            <div id="status"></div>
+        </div>
+
+        <!-- SAĞ PANEL: İstatistikler & Bilgi -->
+        <div class="card">
+            <div class="trends-title">
+                <i class="fa-solid fa-chart-simple"></i> Durum Paneli
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="num" id="totalCount">0</div>
+                    <div class="label">İndirilen</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num">320kbps</div>
+                    <div class="label">Kalite</div>
+                </div>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-shield-halved"></i> <strong>Sistem Bilgisi:</strong> Bağlantılarınız güvenli bir şekilde işlenir ve doğrudan MP3 formatında cihazınıza kaydedilir.
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const form = document.getElementById('downloadForm');
+        const urlInput = document.getElementById('urlInput');
+        const btn = document.getElementById('btn');
+        const status = document.getElementById('status');
+        const historyList = document.getElementById('historyList');
+        const totalCount = document.getElementById('totalCount');
+
+        let downloadCount = 0;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> İndiriliyor...`;
+            status.style.display = 'flex';
+            status.className = 'status-loading';
+            status.innerHTML = `<span class="spinner"></span> Şarkı işleniyor...`;
+
+            try {
+    const response = await fetch('http://127.0.0.1:5000/indir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+    });
+
+    // Sunucu yanıtının JSON olup olmadığını kontrol et
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Sunucudan beklenmeyen yanıt alındı (Rota '/indir' bulunamadı veya Python tarafında hata oluştu).");
+    }
+
+    const data = await response.json();
+
+    if (response.ok) {
+        status.className = 'status-success';
+        status.innerHTML = `<i class="fa-solid fa-circle-check"></i> Başarıyla indirildi!`;
+        
+        // İstatistikleri ve Geçmişi Güncelle
+        downloadCount++;
+        totalCount.innerText = downloadCount;
+
+        if(downloadCount === 1) historyList.innerHTML = '';
+        
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `<i class="fa-solid fa-circle-play"></i> <span>${url}</span>`;
+        historyList.prepend(li);
+
+        urlInput.value = '';
+    } else {
+        throw new Error(data.error || 'İndirme hatası.');
+    }
+} catch (err) {
+    status.className = 'status-error';
+    status.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Hata: ${err.message}`;
+} finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-download"></i> İndirmeyi Başlat`;
+}
+        });
+    </script>
+</body>
+</html>
