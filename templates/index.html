@@ -339,46 +339,47 @@
             status.innerHTML = `<span class="spinner"></span> Şarkı işleniyor...`;
 
             try {
-    const response = await fetch('http://127.0.0.1:5000/indir', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-    });
+                // Yerel IP adresi yerine göreli yol (/indir) kullanıyoruz
+                const response = await fetch('/indir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
 
-    // Sunucu yanıtının JSON olup olmadığını kontrol et
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Sunucudan beklenmeyen yanıt alındı (Rota '/indir' bulunamadı veya Python tarafında hata oluştu).");
-    }
+                // Sunucu yanıtının JSON olup olmadığını kontrol et
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Sunucudan beklenmeyen yanıt alındı ('/indir' rotası bulunamadı veya sunucu hatası).");
+                }
 
-    const data = await response.json();
+                const data = await response.json();
 
-    if (response.ok) {
-        status.className = 'status-success';
-        status.innerHTML = `<i class="fa-solid fa-circle-check"></i> Başarıyla indirildi!`;
-        
-        // İstatistikleri ve Geçmişi Güncelle
-        downloadCount++;
-        totalCount.innerText = downloadCount;
+                if (response.ok) {
+                    status.className = 'status-success';
+                    status.innerHTML = `<i class="fa-solid fa-circle-check"></i> Başarıyla indirildi!`;
+                    
+                    // İstatistikleri ve Geçmişi Güncelle
+                    downloadCount++;
+                    totalCount.innerText = downloadCount;
 
-        if(downloadCount === 1) historyList.innerHTML = '';
-        
-        const li = document.createElement('li');
-        li.className = 'history-item';
-        li.innerHTML = `<i class="fa-solid fa-circle-play"></i> <span>${url}</span>`;
-        historyList.prepend(li);
+                    if(downloadCount === 1) historyList.innerHTML = '';
+                    
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.innerHTML = `<i class="fa-solid fa-circle-play"></i> <span>${url}</span>`;
+                    historyList.prepend(li);
 
-        urlInput.value = '';
-    } else {
-        throw new Error(data.error || 'İndirme hatası.');
-    }
-} catch (err) {
-    status.className = 'status-error';
-    status.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Hata: ${err.message}`;
-} finally {
-    btn.disabled = false;
-    btn.innerHTML = `<i class="fa-solid fa-download"></i> İndirmeyi Başlat`;
-}
+                    urlInput.value = '';
+                } else {
+                    throw new Error(data.error || 'İndirme hatası.');
+                }
+            } catch (err) {
+                status.className = 'status-error';
+                status.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Hata: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-download"></i> İndirmeyi Başlat`;
+            }
         });
     </script>
 </body>
