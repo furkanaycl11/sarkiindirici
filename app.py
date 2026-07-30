@@ -25,18 +25,20 @@ def download_audio():
     if not url:
         return jsonify({'error': 'Lütfen geçerli bir URL girin.'}), 400
 
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-        'quiet': True,
-        'noplaylist': True,
-        'nocheckcertificate': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'web']
-            }
+   ydl_opts = {
+    'format': 'bestaudio/best',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
+    }],
+    # --- YENİ EKLENEN KISIM (Bot engelini aşmak için) ---
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['ios', 'android']
         }
     }
+}
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
