@@ -41,8 +41,8 @@ def indir():
 
     # Eğer cookies.txt varsa ve geçerliyse ekle
     cookie_path = 'cookies.txt'
-    if os.path.exists(cookie_path) and os.path.getsize(cookie_path) > 0:
-        ydl_opts['cookiefile'] = cookie_path
+if os.path.exists(cookie_path) and os.path.getsize(cookie_path) > 0:
+    ydl_opts['cookiefile'] = cookie_path
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
