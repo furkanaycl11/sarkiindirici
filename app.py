@@ -32,10 +32,11 @@ def download_audio():
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    # --- YENİ EKLENEN KISIM (Bot engelini aşmak için) ---
+    # Çerez dosyasını yt-dlp'ye tanıtıyoruz (Bot engelini kesin çözer)
+    'cookiefile': 'cookies.txt',
     'extractor_args': {
         'youtube': {
-            'player_client': ['ios', 'android']
+            'player_client': ['ios', 'android', 'mweb']
         }
     }
 }
